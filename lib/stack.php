@@ -81,7 +81,7 @@ class Stack extends \OpenCloud\PersistentObject {
         return $this->stack_name;
     }
 
-    public function WaitFor($terminal='CREATE_COMPLETE', $timeout=RAXSDK_SERVER_MAXTIMEOUT, $callback=NULL) {
-        parent::WaitFor($terminal, $timeout, $callback, 'stack_status');
+    public function WaitFor($terminal='CREATE_COMPLETE', $timeout=RAXSDK_SERVER_MAXTIMEOUT, $callback=NULL, $status_property='stack_status') {
+        parent::WaitFor($terminal, $timeout, $callback, $status_property);
     }
 }
