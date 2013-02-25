@@ -15,6 +15,7 @@ namespace OpenCloud;
 require_once(__DIR__.'/base.php');
 require_once(__DIR__.'/objectstore.php');
 require_once(__DIR__.'/compute.php');
+require_once(__DIR__.'/orchestration.php');
 require_once(__DIR__.'/volumeservice.php');
 
 /**
@@ -86,6 +87,11 @@ class OpenStack extends \OpenCloud\Base {
 		        'name' => RAXSDK_COMPUTE_NAME,
 		        'region' => RAXSDK_COMPUTE_REGION,
 		        'urltype' => RAXSDK_COMPUTE_URLTYPE
+		    ),
+		    'Orchestration' => array(
+		        'name' => RAXSDK_ORCHESTRATION_NAME,
+		        'region' => RAXSDK_ORCHESTRATION_REGION,
+		        'urltype' => RAXSDK_ORCHESTRATION_URLTYPE
 		    ),
 		    'ObjectStore' => array(
 		        'name' => RAXSDK_OBJSTORE_NAME,
@@ -289,6 +295,7 @@ class OpenStack extends \OpenCloud\Base {
 	 */
 	public function Authenticate() {
 		// try to auth
+
 		$response = $this->Request(
 			$this->Url(),
 			'POST',
@@ -673,6 +680,19 @@ class OpenStack extends \OpenCloud\Base {
      */
     public function Compute($name=NULL, $region=NULL, $urltype=NULL) {
         return $this->Service('Compute', $name, $region, $urltype);
+    }
+
+    /**
+     * Creates a new Orchestration object (Heat API)
+     *
+     * @api
+     * @param string $name the name of the Orchestration service to attach to
+     * @param string $region the name of the region to use
+     * @param string $urltype the URL type (normally "publicURL")
+     * @return ObjectStore
+     */
+    public function Orchestration($name=NULL, $region=NULL, $urltype=NULL) {
+        return $this->Service('Orchestration', $name, $region, $urltype);
     }
 
     /**

@@ -128,6 +128,9 @@ abstract class Base {
 	 */
 	public function MakeQueryString($arr) {
 	    $qstring = '';
+      if (!is_array($arr)) {
+          throw new \Exception("not an array $arr");
+      }
 	    foreach($arr as $key => $value) {
 	        if ($qstring != '')
 	            $qstring .= '&';

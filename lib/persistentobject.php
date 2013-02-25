@@ -121,35 +121,41 @@ abstract class PersistentObject extends Base {
 		$json = json_encode($obj);
 		if ($this->CheckJsonError())
 			return FALSE;
-		$this->debug('%s::Create JSON [%s]', get_class($this), $json);
+		//$this->debug('%s::Create JSON [%s]', get_class($this), $json);
 
 		// send the request
 		$response = $this->Service()->Request(
 			$this->CreateUrl(),
 			'POST',
-			array(),
+			array('Content-Type' => 'application/json', 'Accept' => 'application/json'),
 			$json
 		);
 
 		// check the return code
-		if ($response->HttpStatus() > 204)
+		if ($response->HttpStatus() > 204) {
 			throw new CreateError(sprintf(
 				_('Error creating [%s] [%s], status [%d] response [%s]'),
 				get_class($this),
 				$this->Name(),
 				$response->HttpStatus(),
 				$response->HttpBody()));
+    }
 
 		// set values from response
-		$retobj = json_decode($response->HttpBody());
-		if (!$this->CheckJsonError()) {
-			$top = $this->JsonName();
-			if (isset($retobj->$top)) {
-				foreach($retobj->$top as $key => $value)
-					$this->$key = $value;
-			}
-		}
+    $headers = $response->Headers();
+    if ($response->HttpStatus() == "201" && array_key_exists('Location', $headers)) {
+        $this->Refresh(NULL, $headers['Location']);
+    } else {
+        $retobj = json_decode($response->HttpBody());
+        if (!$this->CheckJsonError()) {
+          $top = $this->JsonName();
+          if (isset($retobj->$top)) {
+            foreach($retobj->$top as $key => $value)
+              $this->$key = $value;
+          }
+        }
 
+    }
 		return $response;
 	}
 
@@ -218,6 +224,7 @@ abstract class PersistentObject extends Base {
 				$response->HttpStatus(),
 				$response->HttpBody()));
 
+    unset($this->{$this->PrimaryKeyField()});
 		return $response;
 	}
 	/**
@@ -287,19 +294,19 @@ abstract class PersistentObject extends Base {
 	 *
 	 */
 	public function WaitFor($terminal='ACTIVE',
-	        $timeout=RAXSDK_SERVER_MAXTIMEOUT, $callback=NULL) {
+	        $timeout=RAXSDK_SERVER_MAXTIMEOUT, $callback=NULL, $status_property='status') {
 	    // find the primary key field
 	    $pk = $this->PrimaryKeyField();
 
 	    // save stats
 		$starttime = time();
-		$startstatus = $this->status;
+		$startstatus = $this->{$status_property};
 		while (TRUE) {
 			$this->Refresh($this->{$pk});
 			if ($callback)
 				call_user_func($callback, $this);
-			if ($this->status == 'ERROR') return;
-			if ($this->status == $terminal) return;
+			if ($this->{$status_property} == 'ERROR') return;
+			if ($this->{$status_property} == $terminal) return;
 			if (time()-$starttime > $timeout) return;
 			sleep(RAXSDK_POLL_INTERVAL);
 		}
@@ -345,26 +352,30 @@ abstract class PersistentObject extends Base {
 	 * @return void
 	 * @throws IdRequiredError
 	 */
-	public function Refresh($id=NULL) {
+	public function Refresh($id=NULL, $url=NULL) {
 		$pk = $this->PrimaryKeyField();
 
-		// error if no ID
-		if (!isset($id))
-			$id = $this->{$pk};
-		if (!$id)
-			throw new IdRequiredError(sprintf(
-			    _('%s has no ID; cannot be refreshed'), get_class()));
+    if (!$url) {
+        // error if no ID
+        if (!isset($id))
+          $id = $this->{$pk};
+        if (!$id)
+          throw new IdRequiredError(sprintf(
+              _('%s has no ID; cannot be refreshed'), get_class()));
 
-		// retrieve it
-		$this->debug(_('%s id [%s]'), get_class($this), $id);
-		$this->{$pk} = $id;
+        // retrieve it
+        $this->debug(_('%s id [%s]'), get_class($this), $id);
+        $this->{$pk} = $id;
 
-		// reset status, if available
-		if (property_exists($this, 'status'))
-			$this->status = NULL;
+        // reset status, if available
+        if (property_exists($this, 'status'))
+          $this->status = NULL;
+
+        $url = $this->Url();
+    }
 
 		// perform a GET on the URL
-		$response = $this->Service()->Request($this->Url());
+		$response = $this->Service()->Request($url);
 
 		// check status codes
 		if ($response->HttpStatus() == 404)
