@@ -450,6 +450,15 @@ class Server extends \OpenCloud\PersistentObject {
 		$this->personality[$path] = base64_encode($data);
 	}
 
+  public function Console($type='novnc') {
+      $info = new \stdClass();
+      $info->type = $type;
+      $msg = new \stdClass();
+      $action = strpos('spice', $type) !== false ? 'os-getSPICEConsole' : 'os-getVNCConsole';
+      $msg->$action = $info;
+      return json_decode($this->Action($msg)->HttpBody())->console;
+  }
+
 	/*********** PROTECTED METHODS ***********/
 
 	/**
