@@ -13,8 +13,7 @@
 namespace OpenCloud\Orchestration;
 
 require_once(__DIR__.'/persistentobject.php');
-require_once(__DIR__.'/metadata.php');
-require_once(__DIR__.'/volumeattachment.php');
+require_once(__DIR__.'/resource.php');
 
 /**
  * The Stack class represents a CloudFormation template and Params.
@@ -83,6 +82,16 @@ class Stack extends \OpenCloud\PersistentObject {
 
     public function Status() {
         return $this->stack_status;
+    }
+
+    public function Resource($id=NULL) {
+        return new Resource($this, $id);
+    }
+
+    public function Resources() {
+        $svc = $this->Service();
+        $url = $this->Url('resources');
+        return $svc->Collection('\OpenCloud\Orchestration\Resource', $url, $this);
     }
 
     public function WaitFor($terminal='CREATE_COMPLETE', $timeout=RAXSDK_SERVER_MAXTIMEOUT, $callback=NULL, $status_property='stack_status') {

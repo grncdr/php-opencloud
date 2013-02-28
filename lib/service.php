@@ -59,6 +59,14 @@ abstract class Service extends Base {
 		        $type, $name, $region, $urltype);
 	} // public function __construct()
 
+  /**
+   * Returns the connection used to create the Service.
+   *
+   */
+  public function Connection() {
+      return $this->conn;
+  }
+
 	/**
 	 * Returns the URL for the Service
 	 *

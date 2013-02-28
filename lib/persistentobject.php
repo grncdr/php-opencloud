@@ -355,7 +355,7 @@ abstract class PersistentObject extends Base {
 	public function Refresh($id=NULL, $url=NULL) {
 		$pk = $this->PrimaryKeyField();
 
-    if (!$url) {
+    if (!isset($url)) {
         // error if no ID
         if (!isset($id))
           $id = $this->{$pk};

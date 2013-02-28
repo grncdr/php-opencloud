@@ -52,7 +52,6 @@ class Orchestration extends Service {
                 $serviceRegion,
                 $urltype
             );
-            assert($conn === $this->conn);
         } // function __construct()
 
     /**
