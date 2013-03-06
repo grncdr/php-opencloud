@@ -36,6 +36,10 @@ class Resource extends \OpenCloud\PersistentObject {
         return $this->resource_type;
     }
 
+    public function Status() {
+        return $this->resource_status;
+    }
+
     public function Get() {
         $svc = $this->Parent()->Service();
         $conn = $svc->Connection();
