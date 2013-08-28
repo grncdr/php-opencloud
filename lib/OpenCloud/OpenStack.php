@@ -503,6 +503,20 @@ class OpenStack extends Client
     }
 
     /**
+     * Creates a new Network (quantum) service object
+     *
+     * @api
+     * @param string $name    The name of the service as it appears in the Catalog
+     * @param string $region  The region (DFW, IAD, ORD, LON, SYD)
+     * @param string $urltype The URL type ("publicURL" or "internalURL")
+     * @return \OpenCloud\Network\Service
+     */
+    public function Network($name = null, $region = null, $urltype = null)
+    {
+        return $this->Service('Network', $name, $region, $urltype);
+    }
+
+    /**
      * Creates a new Volume (Cinder) service object
      *
      * @param string $name    The name of the service as it appears in the Catalog
