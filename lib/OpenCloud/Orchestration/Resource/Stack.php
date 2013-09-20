@@ -12,7 +12,7 @@
  * @author Jamie Hannaford <jamie.hannaford@rackspace.com>
  */
 
-namespace OpenCloud\Orchestration;
+namespace OpenCloud\Orchestration\Resource;
 
 use OpenCloud\Common\PersistentObject;
 use OpenCloud\Exceptions\CreateError;

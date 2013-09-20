@@ -10,7 +10,7 @@
  * @author Stephen Sugden <openstack@stephensugden.com>
  */
 
-namespace OpenCloud\Orchestration;
+namespace OpenCloud\Orchestration\Resource;
 
 use OpenCloud\Common\PersistentObject;
 

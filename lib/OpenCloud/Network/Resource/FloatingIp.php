@@ -1,6 +1,6 @@
 <?php
 
-namespace OpenCloud\Network;
+namespace OpenCloud\Network\Resource;
 
 use OpenCloud\Common\PersistentObject;
 
@@ -19,26 +19,26 @@ class FloatingIp extends PersistentObject {
         parent::__construct($service, $id);
     }
 
-    protected function CreateJson() {
+    protected function createJson() {
         return new \stdClass();
     }
 
-    public function PortId() {
+    public function portId() {
         return $this->port_id;
     }
 
-    public function Disassociate() {
+    public function disassociate() {
         $this->Update(array('port_id' => null));
     }
 
     /**
      * @param $port Port The Port instance to associate this IP to
      */
-    public function Associate($portId) {
+    public function associate($portId) {
         $this->Update(array('port_id' => $portId));
     }
 
-    public function UpdateJson($params = array()) {
+    public function updateJson($params = array()) {
         return array(
             self::$json_name => array_merge(array(
                 'port_id' => $this->port_id
@@ -46,7 +46,7 @@ class FloatingIp extends PersistentObject {
         );
     }
 
-    public function Name() {
+    public function name() {
         return 'floater';
     }
 }

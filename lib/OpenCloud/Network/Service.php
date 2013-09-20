@@ -42,14 +42,12 @@ class Service extends AbstractService {
     }
 
     /**
-     * Returns a Stack object associated with this Orchestration service
-     *
      * @api
      * @param string $id - the floating IP with the ID is retrieved
      * @returns FloatingIp
      */
-    public function FloatingIp($id = null) {
-        return new FloatingIp($this, $id);
+    public function floatingIp($id = null) {
+        return new Resource\FloatingIp($this, $id);
     }
 
     public function namespaces() {
