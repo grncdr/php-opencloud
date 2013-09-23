@@ -193,7 +193,7 @@ class Stack extends PersistentObject
     public function resources()
     {
         return $this->getService()->collection(
-            'OpenCloud\Orchestration\Resource', 
+            'OpenCloud\Orchestration\Resource\Resource', 
             $this->url('resources'), 
             $this
         );
