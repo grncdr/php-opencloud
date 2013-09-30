@@ -33,7 +33,7 @@ class Resource extends PersistentObject
     protected static $json_name = 'resource';
 
     protected static $resource_type_mapping = array(
-        'AWS::EC2::Instance' => array('Compute', 'Server'),
+        'AWS::EC2::Instance' => array('Compute', 'nova', 'Server'),
     );
 
     public function create($info = null) 
@@ -88,18 +88,18 @@ class Resource extends PersistentObject
      */
     public function get() 
     {
-        if (!isset($this->resource_type_mapping[$this->resource_type])) {
+        if (!isset(static::$resource_type_mapping[$this->resource_type])) {
             throw new \Exception("Unknown resource type {$this->resource_type}");
         }
 
-        list($serviceClass, $method) =
-            $this->resource_type_mapping[$this->resource_type];
-        
-        $thisService = $this->getService();
-        $connection  = $service->connection();
-        $region      = $service->region();
+        $orchService = $this->getService();
+        $connection  = $orchService->getConnection();
+        $region      = $orchService->region();
 
-        $resourceService = $connection->service($serviceClass, null, $region);
+        list($serviceType, $serviceName, $method) =
+        self::$resource_type_mapping[$this->resource_type];
+        
+        $resourceService = $connection->service($serviceType, $serviceName, $region);
  
         return $resourceService->$method($this->id());
     }
