@@ -2,6 +2,8 @@
 
 namespace OpenCloud\Network\Resource;
 
+use OpenCloud\Network\Service;
+
 use OpenCloud\Common\PersistentObject;
 
 class FloatingIp extends PersistentObject {

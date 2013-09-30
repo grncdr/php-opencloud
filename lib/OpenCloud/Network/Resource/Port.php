@@ -4,6 +4,8 @@ namespace OpenCloud\Network;
 
 use OpenCloud\Common\PersistentObject;
 
+use OpenCloud\Network\Service;
+
 class Port extends PersistentObject {
     protected static
         $json_name = "port",
