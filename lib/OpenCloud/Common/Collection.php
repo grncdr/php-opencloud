@@ -12,7 +12,10 @@ namespace OpenCloud\Common;
  * @author Glen Campbell <glen.campbell@rackspace.com>
  * @author Jamie Hannaford <jamie.hannaford@rackspace.com>
  */
-class Collection extends Base 
+class Collection extends Base implements
+    \ArrayAccess,
+    \Iterator,
+    \Countable
 {
 
     private $service;
@@ -244,7 +247,7 @@ class Collection extends Base
     public function first() 
     {
         $this->reset();
-        return $this->next();
+        return $this->current();
     }
     
     /**
@@ -258,6 +261,50 @@ class Collection extends Base
         return (isset($this->itemList[$pointer])) ? $this->itemList[$pointer] : false;
     }
 
+    // ArrayAccess
+    /**
+     * Return whether an item exists in the collection at a given offset.
+     *
+     * @param mixed $offset
+     * @return bool
+     */
+    public function offsetExists($offset)
+    {
+        return isset($this->itemList[$offset]);
+    }
+
+    /**
+     * Get the item a particular offset
+     *
+     * @param mixed $offset
+     * @return mixed
+     */
+    public function offsetGet($offset)
+    {
+        return $this->itemList[$offset];
+    }
+
+    /**
+     * Set the item at a particular offset. This operation is not supported.
+     *
+     * @param mixed $offset
+     * @throws RuntimeException
+     */
+    public function offsetSet($offset, $value)
+    {
+        throw new \RuntimeException("Operation not supported");
+    }
+
+    /**
+     * Remove an item from the collection. This operation is not supported.
+     *
+     * @throws RuntimeException
+     */
+    public function offsetUnset($offset)
+    {
+        throw new \RuntimeException("Operation not supported");
+    }
+
     /**
      * Add an item to this collection
      *
@@ -268,19 +315,35 @@ class Collection extends Base
         $this->itemList[] = $item;
     }
     
+    function rewind()
+    {
+        return reset($this->itemList);
+    }
+
+    function current()
+    {
+        return current($this->itemList);
+    }
+
+    function key()
+    {
+        return key($this->itemList);
+    }
+
     /**
      * Returns the next item in the page
      *
      * @api
      * @return Base the next item or FALSE if at the end of the page
      */
-    public function next() 
+    function next()
     {
-        if ($this->pointer >= $this->count()) {
+        $data = next($this->itemList);
+
+        if ($data === false) {
             return false;
         }
         
-        $data  = $this->getItem($this->pointer++);
         $class = $this->getItemClass();
 
         // Are there specific methods in the parent/service that can be used to 
@@ -297,6 +360,11 @@ class Collection extends Base
         }
 
         return false;
+    }
+
+    function valid()
+    {
+        return key($this->itemList) !== null;
     }
 
     /**
