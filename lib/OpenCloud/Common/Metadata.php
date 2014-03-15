@@ -27,6 +27,12 @@ class Metadata extends Base implements \Countable
      */
     protected $metadata = array();
 
+    public function __construct($initialData = array())
+    {
+        foreach ($initialData as $property => $value) {
+            $this->setProperty($property, $value);
+        }
+    }
     /**
      * This setter overrides the base one, since the metadata key can be
      * anything
