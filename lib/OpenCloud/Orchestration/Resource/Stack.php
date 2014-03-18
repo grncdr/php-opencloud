@@ -20,8 +20,6 @@ namespace OpenCloud\Orchestration\Resource;
 use OpenCloud\Common\Exceptions;
 use OpenCloud\Common\Lang;
 use OpenCloud\Common\Resource\PersistentResource;
-use OpenCloud\Orchestration\Enum\Action;
-use OpenCloud\Orchestration\Enum\Status;
 
 /**
  * A stack is a group of resources (servers, load balancers, databases, and so
@@ -53,7 +51,7 @@ class Stack extends PersistentResource
     protected $outputs;
 
     /**
-     * The normalized output array
+     * The normalized output array. This is cached between calls to refresh
      *
      * @var array
      */
@@ -385,6 +383,12 @@ class Stack extends PersistentResource
         'disable_rollback'
     );
 
+    public function refresh($id = null, $url = null)
+    {
+        unset($this->_outputs);
+        return parent::refresh($id, $url);
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -416,7 +420,7 @@ class Stack extends PersistentResource
         return $data->{$this->jsonName()};
     }
 
-    public function eventList()
+    public function getEvents()
     {
         /** @var \OpenCloud\Orchestration\Service $service */
         return $this->resourceList('event');
